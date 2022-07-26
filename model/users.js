@@ -99,6 +99,30 @@ exports.dashData = (id)=>{
                 }
             },
             {
+                $addFields : {
+                    photo :{
+                        $cond : {
+                            if : {
+                                $or : [
+                                    {
+                                        $eq : ['$photo',null]
+                                    },
+                                    {
+                                        $eq : ['$photo','']
+                                    }
+                                ]
+                            },
+                            then : {
+                                $concat : [process.env.staticUrl, 'user.png']
+                            },
+                            else : {
+                                $concat : [process.env.staticUrl, '$photo']
+                            }
+                        }
+                    }
+                }
+            },
+            {
                 $lookup : {
                     from : "users",
                     as : "users",
@@ -116,12 +140,36 @@ exports.dashData = (id)=>{
                                 __v:0, email:0, password:0, contact_no:0, status:0
                             }
                         },
+                        {
+                            $addFields : {
+                                photo :{
+                                    $cond : {
+                                        if : {
+                                            $or : [
+                                                {
+                                                    $eq : ['$photo',null]
+                                                },
+                                                {
+                                                    $eq : ['$photo','']
+                                                }
+                                            ]
+                                        },
+                                        then : {
+                                            $concat : [process.env.staticUrl, 'user.png']
+                                        },
+                                        else : {
+                                            $concat : [process.env.staticUrl, '$photo']
+                                        }
+                                    }
+                                }
+                            }
+                        },
 
                     ]
                 }
             }
         ],(err,res)=>{
-            if(res){
+            if(res && res.length>0){
                 rslv(res)
             }else{
                 console.log(err)

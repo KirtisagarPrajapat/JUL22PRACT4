@@ -74,6 +74,9 @@ exports.registerUser = async(req,res,next)=>{
         contact_no : "required|integer|uniquePhone",
     })
     if(!valid) return false
+
+    req.body = {...helper.userProfileKeys(req.body), email : req.body.email, password : req.body.password, contact_no : req.body.contact_no}
+    
     if(files){
         req.body.photo = req.files[0].filename
     }
@@ -189,7 +192,8 @@ exports.resetPassword = async(req,res,next)=>{
 exports.dashData = async(req,res,next)=>{
 
     var data = await userModel.dashData(req.userObj._id)
-    res.send(data)
+    if(!data) return next(helper.errObj())
+    res.json(helper.resObj(constants.msg.gotData,data))
 }
 
 
@@ -213,6 +217,9 @@ exports.updateUser = async(req,res,next)=>{
         dob : "required|date|dateBeforeToday:18,years",
     })
     if(!valid) return false
+
+    req.body = helper.userProfileKeys(req.body)
+
     if(files){
         req.body.photo = req.files[0].filename
         if(req.userObj.photo && (req.userObj.photo!='')){

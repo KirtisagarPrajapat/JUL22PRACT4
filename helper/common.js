@@ -210,3 +210,8 @@ exports.verifyToken = (token)=>{
         })
     })
 }
+
+exports.userProfileKeys = (userObj)=>{
+    return {name, gender, skills, country, state ,city, address, dob} = userObj
+}
+
